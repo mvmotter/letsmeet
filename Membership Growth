@@ -1,0 +1,98 @@
+-- Request #2
+
+ -- Growth of LetsMeet based on the # of members who joined each year
+
+SELECT 
+    join_year, COUNT(member_id) new_members
+FROM
+    (SELECT 
+        member_id, YEAR(MIN(joined)) join_year
+    FROM
+        grp_member
+    GROUP BY member_id) first_joined_table
+GROUP BY join_year
+ORDER BY join_year;
+
+
+-- Renaming smaller cities to the name of their larger urban areas
+
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE grp_member 
+SET 
+    city = 'Chicago'
+WHERE
+    city IN ('East Chicago' , 'West Chicago',
+        'North Chicago',
+        'Chicago Heights',
+        'Chicago Ridge');
+    
+UPDATE grp_member 
+SET 
+    city = 'San Francisco'
+WHERE
+    city IN ('South San Francisco');
+    
+UPDATE grp_member 
+SET 
+    city = 'New York'
+WHERE
+    city IN ('West New York');
+  
+  
+  -- Differences in year over year growth by city  
+    
+    SELECT 
+    join_year, COUNT(member_id) chicago_growth
+FROM
+    (SELECT 
+        member_id, YEAR(MIN(joined)) join_year
+    FROM
+        grp_member
+    WHERE
+        city = 'Chicago'
+    GROUP BY member_id) first_joined_table
+GROUP BY join_year
+ORDER BY join_year;
+    
+    SELECT 
+    join_year, COUNT(member_id) san_fran_growth
+FROM
+    (SELECT 
+        member_id, YEAR(MIN(joined)) join_year
+    FROM
+        grp_member
+    WHERE
+        city = 'San Francisco'
+    GROUP BY member_id) first_joined_table
+GROUP BY join_year
+ORDER BY join_year;
+    
+   SELECT 
+    join_year, COUNT(member_id) new_york_growth
+FROM
+    (SELECT 
+        member_id, YEAR(MIN(joined)) join_year
+    FROM
+        grp_member
+    WHERE
+        city = 'New York'
+    GROUP BY member_id) first_joined_table
+GROUP BY join_year
+ORDER BY join_year;
+    
+    
+-- Membership growth in 2017 
+
+ SELECT 
+    join_month, COUNT(member_id) year_growth
+FROM
+    (SELECT 
+        member_id, MONTH(MIN(joined)) join_month
+    FROM
+        grp_member
+    WHERE
+        YEAR(joined) = '2017'
+    GROUP BY member_id) year_joined_table
+GROUP BY join_month
+ORDER BY join_month;
