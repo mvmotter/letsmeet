@@ -1,0 +1,122 @@
+-- Request #3
+
+-- Breakdown of ratings 
+
+SELECT 
+    CASE
+        WHEN rating BETWEEN 1 AND 1.99 THEN 'bad'
+        WHEN rating BETWEEN 2 AND 2.99 THEN 'poor'
+        WHEN rating BETWEEN 3 AND 3.99 THEN 'average'
+        WHEN rating BETWEEN 4 AND 4.99 THEN 'great'
+        WHEN rating = 5 THEN 'perfect'
+        WHEN rating = 0 THEN 'no rating'
+    END AS rating_groups,
+    COUNT(group_id)
+FROM
+    grp
+GROUP BY rating_groups;
+
+-- Number of groups with 5 star ratings = 745
+
+
+-- % of groups with 5 star ratings of the groups that were rated 
+
+SELECT 
+    COUNT(group_id)
+FROM
+    grp
+WHERE
+    rating != 0;
+
+SELECT 
+    COUNT(group_id)
+FROM
+    grp
+WHERE
+    rating = 5;
+
+SELECT (745)/(2792) * 100;
+
+-- Percent of groups with 5 star ratings = 26.68%
+
+
+-- Member count for groups with 5 star rating with city and category 
+
+SELECT 
+    COUNT(member_id) num_members,
+    group_name,
+    category_name,
+    city.city
+FROM
+    grp
+        JOIN
+    grp_member ON grp.group_id = grp_member.group_id
+        JOIN
+    city ON grp.city_id = city.city_id
+        JOIN
+    category ON grp.category_id = category.category_id
+WHERE
+    rating = 5
+GROUP BY group_name
+ORDER BY COUNT(num_members) DESC;
+
+-- Closer look at Chicago
+
+SELECT 
+    COUNT(member_id) num_members,
+    group_name,
+    category_name,
+    city.city
+FROM
+    grp
+        JOIN
+    grp_member ON grp.group_id = grp_member.group_id
+        JOIN
+    city ON grp.city_id = city.city_id
+        JOIN
+    category ON grp.category_id = category.category_id
+WHERE
+    rating = 5 AND city.city = 'Chicago'
+GROUP BY group_name
+ORDER BY COUNT(num_members) DESC;
+
+-- Closer look at San Francisco
+
+SELECT 
+    COUNT(member_id) num_members,
+    group_name,
+    category_name,
+    city.city
+FROM
+    grp
+        JOIN
+    grp_member ON grp.group_id = grp_member.group_id
+        JOIN
+    city ON grp.city_id = city.city_id
+        JOIN
+    category ON grp.category_id = category.category_id
+WHERE
+    rating = 5
+        AND city.city = 'San Francisco'
+GROUP BY group_name
+ORDER BY COUNT(num_members) DESC;
+
+-- Grouped by least represented category 
+
+SELECT 
+    COUNT(member_id) num_members,
+    group_name,
+    category_name,
+    city.city
+FROM
+    grp
+        JOIN
+    grp_member ON grp.group_id = grp_member.group_id
+        JOIN
+    city ON grp.city_id = city.city_id
+        JOIN
+    category ON grp.category_id = category.category_id
+WHERE
+    rating = 5
+GROUP BY category_name
+ORDER BY COUNT(num_members);
