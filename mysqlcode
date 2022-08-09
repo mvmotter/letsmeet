@@ -1,0 +1,117 @@
+-- STEP #2  /*Columns to be removed with comments. */
+-- 1 
+SELECT 
+    *
+FROM
+    category;
+ALTER TABLE category
+DROP COLUMN  sort_name;
+/* The column being removed from the table category is called "sort_name".  This data is
+ redundant and holds same information as the category name. The column does not provide any
+ useful information about the categories.  */
+
+-- 2
+ALTER TABLE category
+DROP COLUMN shortname;
+/*The column being removed from the table category is called "shortname".  The data in this
+ column is just a shortned version of the category name and does provide any relevant or
+ useful information about the categories.  It is redundant data.  */
+
+-- 3
+SELECT 
+    *
+FROM
+    grp_member;
+ALTER TABLE grp_member
+DROP COLUMN country;
+/*The column being removed from the grp_member table is called "country".  This column is
+ redundant data as all business is conducted within the United States and it can also be found
+ in the city table, therefore it can be dropped from the table.  */
+
+-- 4
+SELECT 
+    *
+FROM
+    venue_;
+ALTER TABLE venue_
+DROP COLUMN address_2;
+/*The column being removed from the venue table is called "address_2".  This column of data
+ contains all "NULL" information in each cell and does not provide any useful information to
+ the table.  */
+ 
+-- 5
+ALTER TABLE venue_
+DROP COLUMN localized_country_name;
+/*The column being removed from the venue table is called "localized_country_name.  This
+ column is redundant as it already exists in the city table and all of LetsMeet venues are
+ located with in the US.  */
+
+-- 6
+ALTER TABLE venue_
+DROP COLUMN state;
+/*The column being dropped from the table venue is the "state" column that list the state
+ where each venue is located. This information already exisists within the city table and is
+ redudant as each venue can be linked back to the city in which its locate.  The state is 
+ additional information that does not add value to the table therefore it can be removed. */
+
+-- 7
+SELECT 
+    *
+FROM
+    event;
+ALTER TABLE event
+DROP COLUMN maybe_rsvp_count;
+/*The column being deleted from the event table is called "maybe rsvp count". The data in the
+ columns all contains zeros and provides no real useful information.  Attendees are either
+ attending with an rsvp of yes or no.  A better way to track this data would be a no show
+ column for guest counts.  Either way the data is irrelevant and the column can be removed.
+ */
+
+-- 8
+ALTER TABLE event
+DROP COLUMN utc_offset;
+/*The column being deleted from the event table is called "utc offset".  This data should show
+ the difference in hours and minutes between events in a date and time format. However it
+ appears to show a large irrelevant negative number that is in no way useful information.  It
+ can therefore be removed from the table.*/
+
+-- 9
+ALTER TABLE event
+DROP COLUMN why;
+/*The column being removed from the event table is called "why".  This column provides us with
+ no useful information for events with most of the values being "not_found".  Because it is
+ not useful to the table it can be removed.*/
+
+-- 10
+ALTER TABLE event
+DROP COLUMN headcount;
+/*The column being deleted from the event table is called "headcount". This column of data
+ contains no useful information and on zeros can be found. It is therefore redundant and can
+ be removed. */
+
+
+-- STEP #3 /*Split group member table.*/
+
+CREATE TABLE group_sign_ups AS SELECT DISTINCT group_id, member_id, joined FROM
+    grp_member;
+
+CREATE TABLE members AS SELECT DISTINCT member_id, member_name, city, hometown, member_status FROM
+    grp_member;
+
+ALTER TABLE members
+ADD PRIMARY KEY (member_id);
+
+ALTER TABLE group_sign_ups
+ADD FOREIGN KEY (member_id)
+ REFERENCES members (member_id);
+
+ALTER TABLE group_sign_ups
+ADD FOREIGN KEY (group_id)
+ REFERENCES grp (group_id);
+ 
+DESCRIBE members;
+DESCRIBE group_sign_ups;
+ 
+ DROP TABLE grp_member;
+ 
+ /*Please see the ERD file named "Lets Meet ERD" for my final ERD diagram in 3NF.  Thank you!*/
